@@ -1,3 +1,13 @@
 type Query {
     hello: String
 }
+
+type UserToken {
+    user: User!
+    token: String!
+}
+
+type Mutation {
+    login(email: String!, password: String!): User
+    register(firstName: String!, lastName: String!, age: Int!, email: String!, password: String!): UserToken
+}
