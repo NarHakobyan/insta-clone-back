@@ -1,10 +1,10 @@
 'use strict';
 
+import * as yup from 'yup';
 import { classToPlain } from 'class-transformer';
-import { ValidationError } from 'apollo-server-errors';
+import { ValidationError, UserInputError } from 'apollo-server-errors';
 
 import { User } from '../entity/User';
-import { Crypto } from '../utils/crypto';
 
 interface Login {
     email: string;
@@ -26,14 +26,39 @@ export default {
         }
     },
     Mutation: {
-        async login(_: any, params: Login) {
-            const user = await User.findOne({
-                where: {
-                    email: params.email
-                }
-            });
+        login: {
+            validationSchema: yup.object({
+                email: yup
+                    .string()
+                    .required('string.required')
+                    .min(2)
+                    .email('email.invalid'),
+                password: yup
+                    .string()
+                    .required('string.required')
+                    .min(5)
+            }),
+            async resolve(_: any, params: Login) {
+                const user = await User.findOne({
+                    where: {
+                        email: params.email
+                    }
+                });
 
-            return user;
+                let passwordValid;
+                if (user) {
+                    passwordValid = await user.comparePassword(params.password);
+                }
+
+                if (!(user && passwordValid)) {
+                    throw new UserInputError('notfound');
+                }
+
+                return {
+                    user: classToPlain(user),
+                    token: await user.generateToken()
+                };
+            }
         },
         async register(_: any, params: Register) {
             const existingUser = await User.findOne({
@@ -49,9 +74,7 @@ export default {
 
             return {
                 user: classToPlain(user),
-                token: await Crypto.sign({
-                    id: user.id
-                })
+                token: await user.generateToken()
             };
         }
     }

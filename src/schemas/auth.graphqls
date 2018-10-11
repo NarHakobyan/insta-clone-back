@@ -3,11 +3,12 @@ type Query {
 }
 
 type UserToken {
-    user: User!
-    token: String!
+    user: User
+    token: String
+    error: MutationValidationError
 }
 
 type Mutation {
-    login(email: String!, password: String!): User
+    login(email: String!, password: String!): UserToken
     register(firstName: String!, lastName: String!, age: Int!, email: String!, password: String!): UserToken
 }

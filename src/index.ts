@@ -1,18 +1,26 @@
 import * as Koa from 'koa';
 import * as path from 'path';
 import { createConnection } from 'typeorm';
-import { makeExecutableSchema } from 'graphql-tools';
 import { ApolloServer } from 'apollo-server-koa';
+import { applyMiddleware } from 'graphql-middleware';
+import { makeExecutableSchema } from 'graphql-tools';
 import { mergeTypes, fileLoader, mergeResolvers } from 'merge-graphql-schemas';
+import { yupMiddleware, MutationValidationError, FieldValidationError } from 'graphql-yup-middleware';
 
+import { authMiddleware } from './middlewares/auth.middleware';
 import { logger } from './utils/logger';
 
-const typeDefs = mergeTypes(fileLoader(path.join(__dirname, './schemas')), { all: true });
+const typeDefs = mergeTypes(
+    [MutationValidationError, FieldValidationError, ...fileLoader(path.join(__dirname, './schemas'))],
+    { all: true }
+);
 const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers')));
 
 export const startServer = async port => {
     const schema = makeExecutableSchema({ typeDefs, resolvers });
-    const server = new ApolloServer({ schema });
+
+    const schemaWithMiddleware = applyMiddleware(schema, yupMiddleware(), authMiddleware);
+    const server = new ApolloServer({ schema: schemaWithMiddleware, context: context => context.ctx });
 
     await createConnection();
 

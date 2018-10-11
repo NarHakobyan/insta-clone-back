@@ -1,4 +1,4 @@
-import * as bcrypt from 'bcrypt';
+import { Crypto } from 'utils/crypto';
 import { Exclude } from 'class-transformer';
 import {
     Entity,
@@ -44,11 +44,21 @@ export class User extends BaseEntity {
 
     @BeforeInsert()
     async beforeInsert() {
-        this.password = await bcrypt.hash(this.password, 10);
+        this.password = await Crypto.generateHash(this.password);
     }
 
     @BeforeUpdate()
     async beforeUpdate(...args: any[]) {
         console.log('BeforeUpdate', args, this);
+    }
+
+    generateToken(): Promise<string> {
+        return Crypto.encodeJwt({
+            id: this.id
+        });
+    }
+
+    comparePassword(password: string): Promise<boolean> {
+        return Crypto.compareHash(password, this.password);
     }
 }
