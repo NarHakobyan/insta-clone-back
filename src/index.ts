@@ -1,24 +1,18 @@
 import * as Koa from 'koa';
+import * as path from 'path';
 import { createConnection } from 'typeorm';
-import { ApolloServer, gql } from 'apollo-server-koa';
+import { makeExecutableSchema } from 'graphql-tools';
+import { ApolloServer } from 'apollo-server-koa';
+import { mergeTypes, fileLoader, mergeResolvers } from 'merge-graphql-schemas';
 
 import { logger } from './utils/logger';
 
-const typeDefs = gql`
-    type Query {
-        hello: String
-    }
-`;
-
-// Provide resolver functions for your schema fields
-const resolvers = {
-    Query: {
-        hello: () => 'Hello world2!'
-    }
-};
+const typeDefs = mergeTypes(fileLoader(path.join(__dirname, './schemas')), { all: true });
+const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers')));
 
 export const startServer = async port => {
-    const server = new ApolloServer({ typeDefs, resolvers });
+    const schema = makeExecutableSchema({ typeDefs, resolvers });
+    const server = new ApolloServer({ schema });
 
     await createConnection();
 
