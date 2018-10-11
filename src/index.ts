@@ -1,7 +1,8 @@
 import * as Koa from 'koa';
-import { logger } from '@utils/logger';
 import { createConnection } from 'typeorm';
 import { ApolloServer, gql } from 'apollo-server-koa';
+
+import { logger } from './utils/logger';
 
 const typeDefs = gql`
     type Query {

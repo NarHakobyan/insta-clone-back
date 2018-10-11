@@ -2,25 +2,22 @@
   "compilerOptions": {
     "lib": [
       "es5",
-      "es6"
+      "es6",
+      "esnext.asynciterable"
     ],
     "baseUrl": "./src",
     "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "./build",
+    "outDir": "./dist",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "noImplicitAny": false,
-    "sourceMap": true,
+    "sourceMap": false,
     "typeRoots": [
       "./node_modules/@types",
       "./typings"
-    ],
-    "paths": {
-      "@entity/*": ["entity/*"],
-      "@utils/*": ["utils/*"]
-    }
+    ]
   },
   "exclude": [
     "node_modules"

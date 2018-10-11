@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
+    "@types/graphql": "^14.0.2",
     "@types/node": "^10.11.7",
     "@types/signale": "^1.2.0",
     "nodemon": "^1.18.4",
