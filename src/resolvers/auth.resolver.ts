@@ -1,6 +1,7 @@
 'use strict';
 
 import * as yup from 'yup';
+import { Context } from 'koa';
 import * as dayjs from 'dayjs';
 import { classToPlain } from 'class-transformer';
 import { ValidationError, UserInputError } from 'apollo-server-errors';
@@ -14,8 +15,11 @@ interface Login {
 
 export default {
     Query: {
-        hello() {
-            return 'Hello world2!';
+        me: {
+            auth: true,
+            handler(_: any, __: any, ctx: Context) {
+                return ctx.state.auth.user;
+            }
         }
     },
     Mutation: {

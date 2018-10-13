@@ -7,12 +7,13 @@ import { UserInputError } from 'apollo-server';
 import serializeValidationError from '../utils/serializeValidationError';
 
 export const inputValidationMiddleware = async (resolve, parent, args, ctx: Context, info) => {
-    if (!isEmpty(parent)) {
+    const mutationField = info.schema.getMutationType();
+    const mutationDefinition = mutationField.getFields()[info.fieldName];
+
+    if (!isEmpty(parent) || !mutationDefinition) {
         return resolve(parent, args, ctx, info);
     }
 
-    const mutationField = info.schema.getMutationType();
-    const mutationDefinition = mutationField.getFields()[info.fieldName];
     const mutationValidationSchema = mutationDefinition.validationSchema;
 
     const schema =

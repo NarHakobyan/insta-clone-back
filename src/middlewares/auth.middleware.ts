@@ -11,8 +11,14 @@ export const authMiddleware = async (resolve, parent, args, ctx: Context, info) 
     if (!isEmpty(parent)) {
         return resolve(parent, args, ctx, info);
     }
-    const mutationField = info.schema.getMutationType();
-    const mutationDefinition = mutationField.getFields()[info.fieldName];
+    const mutationType = info.schema.getMutationType();
+    const queryType = info.schema.getQueryType();
+
+    const fields = {
+        ...mutationType.getFields(),
+        ...queryType.getFields()
+    };
+    const mutationDefinition = fields[info.fieldName];
 
     if (mutationDefinition && mutationDefinition.auth) {
         try {

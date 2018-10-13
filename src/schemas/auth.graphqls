@@ -1,13 +1,12 @@
 scalar Timestamp
 
 type Query {
-    hello: String
+    me: User!
 }
 
 type UserToken {
     user: User
     token: String
-    error: MutationValidationError
 }
 
 type Mutation {
