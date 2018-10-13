@@ -26,6 +26,10 @@ export const authMiddleware = async (resolve, parent, args, ctx: Context, info) 
             const data = await Crypto.decodeJwt<{ id: string }>(token);
             const user = await User.findOne(data.id);
 
+            if (!user) {
+                throw new AuthenticationError('unauthorized');
+            }
+
             ctx.state.auth = {
                 user,
                 data,

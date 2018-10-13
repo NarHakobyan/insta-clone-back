@@ -17,7 +17,7 @@ export default {
     Query: {
         me: {
             auth: true,
-            handler(_: any, __: any, ctx: Context) {
+            resolve(_: any, __: any, ctx: Context) {
                 return ctx.state.auth.user;
             }
         }
