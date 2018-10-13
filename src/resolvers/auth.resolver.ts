@@ -18,7 +18,7 @@ export default {
         me: {
             auth: true,
             resolve(_: any, __: any, ctx: Context) {
-                return ctx.state.auth.user;
+                return classToPlain(ctx.state.auth.user);
             }
         }
     },
