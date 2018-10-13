@@ -8,7 +8,9 @@ type UserToken {
     error: MutationValidationError
 }
 
+scalar Date
+
 type Mutation {
     login(email: String!, password: String!): UserToken
-    register(firstName: String!, lastName: String!, age: Int!, email: String!, password: String!): UserToken
+    register(firstName: String!, lastName: String!, dob: Date!, email: String!, password: String!): UserToken
 }

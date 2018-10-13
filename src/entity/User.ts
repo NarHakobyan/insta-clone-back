@@ -31,8 +31,10 @@ export class User extends BaseEntity {
     @Exclude()
     password: string;
 
-    @Column()
-    age: number;
+    @Column({
+        type: 'timestamp without time zone'
+    })
+    dob: Date;
 
     @CreateDateColumn({
         type: 'timestamp without time zone'

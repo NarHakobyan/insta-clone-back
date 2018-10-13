@@ -5,10 +5,11 @@ import { ApolloServer } from 'apollo-server-koa';
 import { applyMiddleware } from 'graphql-middleware';
 import { makeExecutableSchema } from 'graphql-tools';
 import { mergeTypes, fileLoader, mergeResolvers } from 'merge-graphql-schemas';
-import { yupMiddleware, MutationValidationError, FieldValidationError } from 'graphql-yup-middleware';
+import { MutationValidationError, FieldValidationError } from 'graphql-yup-middleware';
 
 import { authMiddleware } from './middlewares/auth.middleware';
 import { logger } from './utils/logger';
+import { inputValidationMiddleware } from './middlewares/input-validation.middleware';
 
 const typeDefs = mergeTypes(
     [MutationValidationError, FieldValidationError, ...fileLoader(path.join(__dirname, './schemas'))],
@@ -19,7 +20,7 @@ const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers'))
 export const startServer = async port => {
     const schema = makeExecutableSchema({ typeDefs, resolvers });
 
-    const schemaWithMiddleware = applyMiddleware(schema, yupMiddleware(), authMiddleware);
+    const schemaWithMiddleware = applyMiddleware(schema, authMiddleware, inputValidationMiddleware);
     const server = new ApolloServer({ schema: schemaWithMiddleware, context: context => context.ctx });
 
     await createConnection();
