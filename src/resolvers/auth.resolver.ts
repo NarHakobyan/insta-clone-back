@@ -3,10 +3,10 @@
 import * as yup from 'yup';
 import * as dayjs from 'dayjs';
 import { classToPlain } from 'class-transformer';
+import { GraphQLScalarType, Kind } from 'graphql';
 import { ValidationError, UserInputError } from 'apollo-server-errors';
 
 import { User } from '../entity/User';
-import { GraphQLScalarType, Kind } from 'graphql';
 
 interface Login {
     email: string;
@@ -14,18 +14,16 @@ interface Login {
 }
 
 export default {
-    Date: new GraphQLScalarType({
-        name: 'Date',
-        description: 'Date custom scalar type',
+    Timestamp: new GraphQLScalarType({
+        name: 'Timestamp',
+        description: 'Timestamp custom scalar type',
         parseValue(value: number) {
-            console.log(dayjs(value).toDate());
             return dayjs(value).toDate();
         },
         serialize(value: Date) {
             return value.valueOf();
         },
-        parseLiteral(ast) {
-            debugger;
+        parseLiteral(ast: any) {
             if (ast.kind === Kind.INT) {
                 return parseInt(ast.value, 10); // ast value is always in string format
             }
@@ -43,7 +41,6 @@ export default {
                 email: yup
                     .string()
                     .required('string.required')
-                    .min(2)
                     .email('email.invalid'),
                 password: yup
                     .string()
@@ -78,24 +75,23 @@ export default {
                 firstName: yup
                     .string()
                     .required('string.required')
-                    .min(2),
+                    .min(2, 'err.min_length'),
                 lastName: yup
                     .string()
-                    .required('string.required')
-                    .min(2),
+                    .required('err.required')
+                    .min(2, 'err.min_length'),
                 dob: yup
                     .date()
                     .max(dayjs().subtract(18, 'year'))
-                    .required('integer.required'),
+                    .required('err.required'),
                 email: yup
                     .string()
-                    .required('string.required')
-                    .min(2)
+                    .required('err.required')
                     .email('email.invalid'),
                 password: yup
                     .string()
-                    .required('string.required')
-                    .min(5)
+                    .required('err.required')
+                    .min(5, 'err.min_length')
             }),
             async resolve(_: any, params: User) {
                 const existingUser = await User.findOne({

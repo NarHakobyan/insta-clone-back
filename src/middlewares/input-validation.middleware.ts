@@ -4,7 +4,7 @@ import { Context } from 'koa';
 import isEmpty = require('lodash/isEmpty');
 import { UserInputError } from 'apollo-server';
 
-import serializeValidationError from './serializeValidationError';
+import serializeValidationError from '../utils/serializeValidationError';
 
 export const inputValidationMiddleware = async (resolve, parent, args, ctx: Context, info) => {
     if (!isEmpty(parent)) {
@@ -28,6 +28,6 @@ export const inputValidationMiddleware = async (resolve, parent, args, ctx: Cont
         return resolve(parent, values, ctx, info);
     } catch (error) {
         const errorResult = serializeValidationError(error);
-        throw new UserInputError(errorResult.error.message, errorResult.error.details);
+        throw new UserInputError(errorResult.message, errorResult.details);
     }
 };

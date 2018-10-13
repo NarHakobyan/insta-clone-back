@@ -2,7 +2,7 @@ type User {
     id: ID
     firstName: String!
     lastName: String!
-    dob: Date!
+    dob: Timestamp!
     email: String!
     password: String
 }
