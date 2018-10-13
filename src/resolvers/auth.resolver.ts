@@ -3,7 +3,6 @@
 import * as yup from 'yup';
 import * as dayjs from 'dayjs';
 import { classToPlain } from 'class-transformer';
-import { GraphQLScalarType, Kind } from 'graphql';
 import { ValidationError, UserInputError } from 'apollo-server-errors';
 
 import { User } from '../entity/User';
@@ -14,22 +13,6 @@ interface Login {
 }
 
 export default {
-    Timestamp: new GraphQLScalarType({
-        name: 'Timestamp',
-        description: 'Timestamp custom scalar type',
-        parseValue(value: number) {
-            return dayjs(value).toDate();
-        },
-        serialize(value: Date) {
-            return value.valueOf();
-        },
-        parseLiteral(ast: any) {
-            if (ast.kind === Kind.INT) {
-                return parseInt(ast.value, 10); // ast value is always in string format
-            }
-            return null;
-        }
-    }),
     Query: {
         hello() {
             return 'Hello world2!';
@@ -37,16 +20,17 @@ export default {
     },
     Mutation: {
         login: {
-            validationSchema: yup.object({
-                email: yup
-                    .string()
-                    .required('string.required')
-                    .email('email.invalid'),
-                password: yup
-                    .string()
-                    .required('string.required')
-                    .min(5)
-            }),
+            validationSchema: () =>
+                yup.object({
+                    email: yup
+                        .string()
+                        .required('string.required')
+                        .email('email.invalid'),
+                    password: yup
+                        .string()
+                        .required('string.required')
+                        .min(5)
+                }),
             async resolve(_: any, params: Login) {
                 const user = await User.findOne({
                     where: {
@@ -71,28 +55,29 @@ export default {
         },
         register: {
             auth: true,
-            validationSchema: yup.object({
-                firstName: yup
-                    .string()
-                    .required('string.required')
-                    .min(2, 'err.min_length'),
-                lastName: yup
-                    .string()
-                    .required('err.required')
-                    .min(2, 'err.min_length'),
-                dob: yup
-                    .date()
-                    .max(dayjs().subtract(18, 'year'))
-                    .required('err.required'),
-                email: yup
-                    .string()
-                    .required('err.required')
-                    .email('email.invalid'),
-                password: yup
-                    .string()
-                    .required('err.required')
-                    .min(5, 'err.min_length')
-            }),
+            validationSchema: () =>
+                yup.object({
+                    firstName: yup
+                        .string()
+                        .required('string.required')
+                        .min(2, 'err.min_length'),
+                    lastName: yup
+                        .string()
+                        .required('err.required')
+                        .min(2, 'err.min_length'),
+                    dob: yup
+                        .date()
+                        .max(dayjs().subtract(18, 'year'))
+                        .required('err.required'),
+                    email: yup
+                        .string()
+                        .required('err.required')
+                        .email('email.invalid'),
+                    password: yup
+                        .string()
+                        .required('err.required')
+                        .min(5, 'err.min_length')
+                }),
             async resolve(_: any, params: User) {
                 const existingUser = await User.findOne({
                     where: {

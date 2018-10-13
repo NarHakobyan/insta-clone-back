@@ -11,11 +11,15 @@ import { authMiddleware } from './middlewares/auth.middleware';
 import { logger } from './utils/logger';
 import { inputValidationMiddleware } from './middlewares/input-validation.middleware';
 
-const typeDefs = mergeTypes(
-    [MutationValidationError, FieldValidationError, ...fileLoader(path.join(__dirname, './schemas'))],
-    { all: true }
-);
-const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers')));
+const typeDefs = mergeTypes([
+    MutationValidationError,
+    FieldValidationError,
+    ...fileLoader(path.join(__dirname, './schemas'))
+]);
+const resolvers = mergeResolvers([
+    ...fileLoader(path.join(__dirname, './resolvers')),
+    ...fileLoader(path.join(__dirname, './scalars'))
+]);
 
 export const startServer = async port => {
     const schema = makeExecutableSchema({ typeDefs, resolvers });
