@@ -1,4 +1,3 @@
-import { Crypto } from 'utils/crypto';
 import { Exclude } from 'class-transformer';
 import {
     Entity,
@@ -10,6 +9,9 @@ import {
     CreateDateColumn,
     UpdateDateColumn
 } from 'typeorm';
+
+import { Crypto } from '../utils/crypto';
+import { logger } from '../utils/logger';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -49,7 +51,7 @@ export class User extends BaseEntity {
 
     @BeforeUpdate()
     async beforeUpdate(...args: any[]) {
-        console.log('BeforeUpdate', args, this);
+        logger.info('BeforeUpdate', args, this);
     }
 
     generateToken(): Promise<string> {

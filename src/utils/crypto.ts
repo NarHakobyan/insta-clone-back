@@ -25,13 +25,13 @@ export class Crypto {
      * @param {string} token
      * @return {Promise<object | string>}
      */
-    static decodeJwt(token: string): Promise<object | string> {
-        return new Promise<object | string>((resolve, reject) => {
+    static decodeJwt<T extends object | string = object | string>(token: string): Promise<T & { iat: number }> {
+        return new Promise<T & { iat: number }>((resolve, reject) => {
             jwt.verify(token, 'secret' /* todo add to configs */, (err, decoded) => {
                 if (err) {
                     return reject(err);
                 }
-                return resolve(decoded);
+                return resolve(<T & { iat: number }>decoded);
             });
         });
     }
