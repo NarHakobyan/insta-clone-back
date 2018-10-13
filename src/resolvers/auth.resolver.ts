@@ -54,7 +54,6 @@ export default {
             }
         },
         register: {
-            auth: true,
             validationSchema: () =>
                 yup.object({
                     firstName: yup

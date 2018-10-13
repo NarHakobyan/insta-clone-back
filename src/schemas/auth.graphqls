@@ -1,3 +1,5 @@
+scalar Timestamp
+
 type Query {
     hello: String
 }
@@ -7,8 +9,6 @@ type UserToken {
     token: String
     error: MutationValidationError
 }
-
-scalar Timestamp
 
 type Mutation {
     login(email: String!, password: String!): UserToken
