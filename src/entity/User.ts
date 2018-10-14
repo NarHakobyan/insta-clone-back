@@ -7,11 +7,15 @@ import {
     BeforeInsert,
     BeforeUpdate,
     CreateDateColumn,
-    UpdateDateColumn
+    UpdateDateColumn,
+    OneToMany,
+    JoinColumn,
+    Generated
 } from 'typeorm';
 
 import { Crypto } from '../utils/crypto';
 import { logger } from '../utils/logger';
+import { Story } from './Story';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -35,6 +39,14 @@ export class User extends BaseEntity {
         type: 'timestamp without time zone'
     })
     dob: Date;
+
+    @OneToMany(() => Story, story => story.author)
+    @JoinColumn()
+    stories: Story[];
+
+    @Column({ nullable: true })
+    @Generated('uuid')
+    activationToken: string;
 
     @CreateDateColumn({
         type: 'timestamp without time zone'

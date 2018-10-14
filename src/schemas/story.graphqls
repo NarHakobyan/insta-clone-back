@@ -1,0 +1,21 @@
+type Story {
+    id: ID!
+    title: String!
+    description: String!
+    author: User!
+    image: String
+    createdDate: Timestamp!
+}
+
+type Query {
+    stories: [Story]!
+}
+
+input NewStory {
+    title: String!
+    description: String!
+}
+
+type Mutation {
+    addStory(newStory: NewStory!): Story
+}
